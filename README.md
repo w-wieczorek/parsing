@@ -10,6 +10,7 @@ This is a simple Crystal module for one-pass parsing.
    dependencies:
      parsing:
        github: w-wieczorek/parsing
+       branch: master
    ```
 
 2. Run `shards install`
@@ -49,7 +50,7 @@ num_semicolon : Parser(Int32) =
 edge : Parser(Tuple(Int32, Int32)) =
   num.store { |v1|
   whitespace.many0.skip (
-  seq(Slice['-', '-']).skip (
+  seq(Slice['-', '>']).skip (
   whitespace.many0.skip (
   num.store { |v2|
   char(';').skip (
@@ -57,6 +58,7 @@ edge : Parser(Tuple(Int32, Int32)) =
   mreturn({v1, v2}) ) ) } ) ) ) }
 
 graph_parser : Parser(Tuple(Array(Int32), Array(Tuple(Int32, Int32)))) =
+  whitespace.many0.skip (
   seq(Slice['g', 'r', 'a', 'p', 'h']).skip (
   whitespace.many1.skip (
   letter.store { |name|
@@ -66,7 +68,8 @@ graph_parser : Parser(Tuple(Array(Int32), Array(Tuple(Int32, Int32)))) =
   num_semicolon.many1.store { |vs|
   edge.many0.store { |es|
   char('}').skip (
-  mreturn({vs, es}) ) } } ) ) ) } ) )
+  whitespace.many0.skip (
+  mreturn({vs, es}) ) ) } } ) ) ) } ) ) )
 
 result = graph_parser.parse text
 if result.size > 0
@@ -89,4 +92,4 @@ end
 
 ## Contributors
 
-- [your-name-here](https://github.com/your-github-user) - creator and maintainer
+- [Wojciech Wieczorek](https://github.com/w-wieczorek) - creator and maintainer

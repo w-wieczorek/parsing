@@ -1,4 +1,6 @@
 module Parsing
+  extend self
+
   class Parser(T)
     property fun : Proc( Slice(Char), Array(Tuple(T, Slice(Char))) )
   
@@ -59,11 +61,11 @@ module Parsing
     end
   end
   
-  def self.mreturn(r : T) forall T
+  def mreturn(r : T) forall T
     Parser(T).new( ->(cs : Slice(Char)) { [{r, cs}] } )
   end
   
-  def self.item
+  def item
     Parser(Char).new(
       ->(cs : Slice(Char)) {
         if cs.empty? 
@@ -76,15 +78,15 @@ module Parsing
     )
   end
   
-  def self.sat(&cond : Char -> Bool)
+  def sat(&cond : Char -> Bool)
     item.store { |c| cond.call(c) ? mreturn(c) : Fail(Char).new }
   end
   
-  def self.char(c : Char)
+  def char(c : Char)
     sat &.==(c)
   end
   
-  def self.seq(cs : Slice(Char)) : Parser(Nil)
+  def seq(cs : Slice(Char)) : Parser(Nil)
     if cs.size > 0
       c, _cs = cs[0], cs[1..]
       (char c).skip(seq(_cs).skip(Parser(Nil).mreturn(nil)))
@@ -93,15 +95,15 @@ module Parsing
     end
   end
   
-  def self.digit
+  def digit
     sat &.number?
   end
   
-  def self.letter
+  def letter
     sat &.letter?
   end
   
-  def self.whitespace
+  def whitespace
     sat &.whitespace?
   end
 end
